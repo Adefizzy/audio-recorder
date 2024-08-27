@@ -27,7 +27,6 @@ export default function useTimer() {
   };
 
   const stopTimer = () => {
-    console.log("STOP");
     clearInterval(tickerRef.current);
     startRef.current = null;
     localStorage.removeItem("paused");
@@ -36,8 +35,6 @@ export default function useTimer() {
   };
 
   const pauseTimer = () => {
-    console.log("PAUSED");
-
     if (startRef.current) {
       localStorage.paused = new Date().getTime() - startRef.current;
     }

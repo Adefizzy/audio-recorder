@@ -15,22 +15,17 @@ export const AudioSourceContext = createContext<AudioContextProps | null>(null);
 export const AudioSourceProvider = ({ children }: { children: ReactNode }) => {
   const [audioSrc, setAudioSrc] = useState<string[]>([]);
   const audioRefs = useRef<AudioRef[]>(null);
-
-  console.log({ audioRefs })
   const addAudio = (audio: AudioRef) => {
     if (audioRefs.current) {
-        console.log({ audioRefs })
       audioRefs.current.push(audio);
     }
   };
 
   const pauseAllAudio = () => {
-    console.log({ audioRefs })
     audioRefs.current?.forEach((audio) => audio.ref?.pause());
   };
 
   const pauseAllButOne = (index: number) => {
-    console.log({ audioRefs })
     audioRefs.current?.forEach((audio) => {
       if (audio.index !== index) {
         audio.ref?.pause();

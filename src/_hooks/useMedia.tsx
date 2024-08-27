@@ -6,9 +6,9 @@ const useMedia = () => {
   const recorderRef = useRef<MediaRecorder>();
   const { timeReadingProps, startTimer, stopTimer, pauseTimer, resumeTimer } = useTimer();
   const chunkRef = useRef<Blob[]>([]);
-  const {audioSrc, setAudioSrc, pauseAllAudio} = useAudioSourceContext()
+  const {audioSrc, setAudioSrc} = useAudioSourceContext()
   const [temporalSrc, setTemporalSrc] = useState("")
-  const [recordingState, setRecordingState] = useState<string | undefined>(
+  const [recordingState, setRecordingState] = useState<RecordingState | undefined>(
     recorderRef.current?.state
   );
 
@@ -46,20 +46,18 @@ const useMedia = () => {
     } catch (error: unknown) {
       alert(error as DOMException);
     }
-  }, []);
+  }, [setAudioSrc]);
 
 
 
   useEffect(() => {
     setUpMedia();
-
   }, [setUpMedia]);
 
   const handleRecordingStart = () => {
     recorderRef.current?.start();
     setRecordingState(recorderRef.current?.state);
     startTimer()
-    pauseAllAudio();
   };
 
   const handleRecordingPause = () => {
@@ -82,7 +80,7 @@ const useMedia = () => {
 
   const handleRecordingDelete = () => {
     chunkRef.current = [];
-    setRecordingState("");
+    setRecordingState(undefined);
     setTemporalSrc("")
     setUpMedia();
     stopTimer()

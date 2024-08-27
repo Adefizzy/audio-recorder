@@ -7,7 +7,6 @@ export default function AudioPlayer({ audioSrc, index }: { audioSrc: string , in
   const {
     playedPercent,
     onSliderChange,
-    // currentPlayTime,
     audioState,
     handlePlay,
     handlePause,

@@ -1,4 +1,3 @@
-import { useAudioSourceContext } from "@/_providers/AudioSourceContext";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function useMediaPlayer(audioSrc: string, index: number) {
@@ -9,15 +8,9 @@ export default function useMediaPlayer(audioSrc: string, index: number) {
   const [playedPercent, setPlayedPercent] = useState<number | undefined>(
     undefined
   );
-  const {addAudio, pauseAllButOne} = useAudioSourceContext()
-  /* const { onSliderChange, currentPlayTime } = usePlayedPercent(
-    audioRef.current
-  ); */
-
   const [audioState, setAudioState] = useState<
     "ended" | "playing" | "paused" | ""
   >("");
-
   const [playbackRate, setPlayBackRate] = useState(1);
 
   useEffect(() => {
@@ -25,9 +18,8 @@ export default function useMediaPlayer(audioSrc: string, index: number) {
       audioRef.current.src = audioSrc;
       audioRef.current.preload = "auto";
       audioRef.current?.load();
-      addAudio({ref: audioRef.current, index})
     }
-  }, [addAudio, audioSrc, index]);
+  }, [audioSrc, index]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -42,18 +34,6 @@ export default function useMediaPlayer(audioSrc: string, index: number) {
       });
   }, []);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    audio?.addEventListener("playing", () => {
-      console.log("playing");
-    });
-
-    return () =>
-      audio?.removeEventListener("ended", () => {
-        console.log("playing");
-      });
-  }, []);
-
   const loadDuration = useCallback(async () => {
     const audio = audioRef.current;
 
@@ -63,24 +43,15 @@ export default function useMediaPlayer(audioSrc: string, index: number) {
       audio.muted = true;
     }
 
-    console.log("here now playing");
     audio?.addEventListener("timeupdate", () => {
-      console.log("here now");
       if (!isNaN(audio?.duration) && audio?.duration !== Infinity) {
-        console.log("timeupdate", {
-          readyState: audio?.readyState,
-          duration: audio?.duration,
-        });
-
         setLoading((loading) => {
           if (loading) {
             audio?.pause();
             audio.currentTime = 0;
-            console.log("final", "isLoading");
             audio.playbackRate = 1;
             audio.muted = false;
           }
-
           return false;
         });
       }
@@ -91,28 +62,11 @@ export default function useMediaPlayer(audioSrc: string, index: number) {
     loadDuration();
   }, [loadDuration]);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio) {
-      audio.addEventListener("loadedmetadata", () => {
-        const duration = audio.duration;
-
-        console.log("loadedmetadata", { duration });
-        /*  if (!isNaN(duration) && duration !== Infinity) {
-          console.log("Duration:", duration);
-        } else {
-          console.error("Failed to load media duration.");
-        } */
-      });
-    }
-  }, []);
 
   const handlePlay = async () => {
     const audio = audioRef.current;
     await audio?.play();
     setAudioState("playing");
-    pauseAllButOne(index)
-
   };
 
   const handlePause = () => {
@@ -183,6 +137,8 @@ export default function useMediaPlayer(audioSrc: string, index: number) {
     setCurrentPlayTime(currentPlayTime);
     setPlayedPercent(value.at(0) ?? 0);
   };
+
+
 
   return {
     playedPercent,
